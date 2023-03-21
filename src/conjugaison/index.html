@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de conjugaison</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <div id="selection" class="text-center">
+            <h1>Choisissez les temps et les verbes à réviser</h1>
+            <form id="temps">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="présent" id="present">
+                    <label class="form-check-label" for="present">Présent</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="imparfait" id="imparfait">
+                    <label class="form-check-label" for="imparfait">Imparfait</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="futur" id="futur">
+                    <label class="form-check-label" for="futur">Futur</label>
+                </div>
+            </form>
+            <form id="verbes" class="mt-3">
+                <!-- Ajoutez ici des éléments pour les cases à cocher des verbes -->
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="être" id="etre">
+                    <label class="form-check-label" for="etre">être</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="avoir" id="avoir">
+                    <label class="form-check-label" for="avoir">avoir</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" value="avoir" id="avoir">
+                    <label class="form-check-label" for="er">-er</label>
+                </div>
+                <!-- ... Ajoutez les autres verbes et catégories de verbes ici ... -->
+            </form>
+
+            <button id="commencer" class="btn btn-primary mt-3">Commencer</button>
+        </div>
+        <div id="jeu" class="text-center d-none">
+            <h1>Conjuguez le verbe</h1>
+            <p id="phrase"></p>
+            <button id="valider" class="btn btn-primary mt-3">Valider</button>
+        </div>
+        <div id="resultats" class="text-center d-none">
+            <h1>Résultats</h1>
+            <p>Vous avez obtenu <span id="score"></span> bonnes réponses sur 15.</p>
+            <button id="recommencer" class="btn btn-primary mt-3">Recommencer</button>
+        </div>
+    </div>
+
+    <script>
+        const phrasesExemple = [
+            { phrase: "Hier, j'_ le bus pour aller à l'école.", verbe: "prendre", temps: "imparfait" },
+            { phrase: "Hier, j'_ très peur.", verbe: "avoir", temps: "imparfait" },
+            // ... Ajoutez d'autres phrases ici ...
+        ];
+
+        let phrases = [];
+        let tempsSelectionnes = [];
+        let verbesSelectionnes = [];
+        let questionCourante = 0;
+        let score = 0;
+
+        function commencer() {
+            $("#selection").addClass("d-none");
+            $("#jeu").removeClass("d-none");
+
+            tempsSelectionnes = $("#temps input:checked").map(function () { return this.value; }).toArray();
+            verbesSelectionnes = $("#verbes input:checked").map(function () { return this.value; }).toArray();
+
+            genererPhrases();
+            poserQuestion();
+        }
+
+        function genererPhrases() {
+            phrases = phrasesExemple.filter(p => tempsSelectionnes.includes(p.temps) && verbesSelectionnes.includes(p.verbe));
+            phrases.sort(() => Math.random() - 0.5);
+            phrases = phrases.slice(0, 15);
+        }
+
+        function poserQuestion() {
+            if (questionCourante < phrases.length) {
+                let phraseAvecInput = phrases[questionCourante].phrase.replace('_', '<input type="text" id="reponse" class="form-control-inline">');
+                $("#phrase").html(phraseAvecInput);
+                $("#reponse").focus();
+            } else {
+                afficherResultats();
+            }
+        }
+
+
+        function validerReponse() {
+            let reponse = $("#reponse").val();
+            if (reponse === phrases[questionCourante].verbe) {
+                score++;
+            }
+            questionCourante++;
+            poserQuestion();
+        }
+
+        function afficherResultats() {
+            $("#jeu").addClass("d-none");
+            $("#resultats").removeClass("d-none");
+            $("#score").text(score);
+        }
+
+        function recommencer() {
+            $("#resultats").addClass("d-none");
+            $("#selection").removeClass("d-none");
+            questionCourante = 0;
+            score = 0;
+        }
+
+
+        const sujets = [
+          ["Je", 0],
+          ["Tu", 1],
+          ["Il/Elle", 2],
+          ["Nous", 3],
+          ["Vous", 4],
+          ["Ils/Elles", 5],
+          ["Sophie", 2],
+          ["Les voisins", 5],
+          ["L'enfant", 2],
+        ];
+            
+        const verbes = [
+          {
+            infinitif: "manger",
+            conjugaison: {
+              imparfait: ["mangeais", "mangeais", "mangeait", "mangions", "mangiez", "mangeaient"],
+              present: ["mange", "manges", "mange", "mangeons", "mangez", "mangent"],
+              futur: ["mangerai", "mangeras", "mangera", "mangerons", "mangerez", "mangeront"],
+            },
+          },
+          // Ajoutez d'autres verbes ici
+        ];
+      
+        function getRandomElement(array) {
+          return array[Math.floor(Math.random() * array.length)];
+        }
+        
+        function genererPhrase() {
+          const sujet = getRandomElement(sujets);
+          const verbe = getRandomElement(verbes);
+          const temps = getRandomElement(["imparfait", "present", "futur"]);
+        
+          const indexSujet = sujet[1];
+        
+          const phrase = {
+            sujet: sujet[0],
+            verbe: verbe.infinitif,
+            temps: temps,
+            phrase: `${sujet[0]} _ (${verbe.infinitif} / ${temps}).`,
+            reponse: verbe.conjugaison.imparfait[indexSujet],
+          };
+      
+          return phrase;
+        }
+        
+        // Générer une phrase aléatoire
+        const phraseAleatoire = genererPhrase();
+        console.log("Phrase à conjuguer :", phraseAleatoire.phrase);
+        console.log("Réponses correctes :", phraseAleatoire.reponse);
+
+
+        $("#commencer").click(commencer);
+        $("#valider").click(validerReponse);
+        $("#recommencer").click(recommencer);
+
+    </script>
+
+</body>
+</html>
