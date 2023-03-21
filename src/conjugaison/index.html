@@ -39,7 +39,7 @@
                 </div>
                 <div class="form-check form-check-inline">
                     <input class="form-check-input" type="checkbox" value="avoir" id="avoir">
-                    <label class="form-check-label" for="er">-er</label>
+                    <label class="form-check-label" for="er">er</label>
                 </div>
                 <!-- ... Ajoutez les autres verbes et catégories de verbes ici ... -->
             </form>
@@ -85,9 +85,13 @@
         }
 
         function genererPhrases() {
-            phrases = phrasesExemple.filter(p => tempsSelectionnes.includes(p.temps) && verbesSelectionnes.includes(p.verbe));
+            for (let i = 0; i < 10; i += 1) {
+                const p = genererPhrase().next().value;
+                phrases.push(p);
+            }
             phrases.sort(() => Math.random() - 0.5);
             phrases = phrases.slice(0, 15);
+            console.log(phrases);
         }
 
         function poserQuestion() {
@@ -149,31 +153,35 @@
           return array[Math.floor(Math.random() * array.length)];
         }
         
-        function genererPhrase() {
-          const sujet = getRandomElement(sujets);
-          const verbe = getRandomElement(verbes);
-          const temps = getRandomElement(["imparfait", "present", "futur"]);
+        function* genererPhrase() {
+            while (true) {
+                const sujet = getRandomElement(sujets);
+                const verbe = getRandomElement(verbes.filter( v => verbesSelectionnes.includes(v.infinitif)));
+                const temps = getRandomElement(tempsSelectionnes);
+                console.log(verbe);
+                console.log(temps);
 
-          const complementDirect = getRandomElement(verbe.complement);
-          const complementIndirect = getRandomElement(complements);
+                const complementDirect = getRandomElement(verbe.complement);
+                const complementIndirect = getRandomElement(complements);
         
-          const indexSujet = sujet[1];
+                const indexSujet = sujet[1];
 
-          const phrase = {
-            sujet: sujet[0],
-            verbe: verbe.infinitif,
-            temps: temps,
-            phrase: `${sujet[0]} _ (${verbe.infinitif} / ${temps})  ${complementDirect} ${complementIndirect}.`,
-            reponse: verbe.conjugaison[temps][indexSujet],
-          };
-      
-          return phrase;
+                const phrase = {
+                  sujet: sujet[0],
+                  verbe: verbe.infinitif,
+                  temps: temps,
+                  phrase: `${sujet[0]} _ (${verbe.infinitif} / ${temps})  ${complementDirect} ${complementIndirect}.`,
+                  reponse: verbe.conjugaison[temps][indexSujet],
+                };
+
+                yield phrase;
+            }
         }
         
         // Générer une phrase aléatoire
-        const phraseAleatoire = genererPhrase();
-        console.log("Phrase à conjuguer :", phraseAleatoire.phrase);
-        console.log("Réponses correctes :", phraseAleatoire.reponse);
+        //const phraseAleatoire = genererPhrase().next().value;
+        //console.log("Phrase à conjuguer :", phraseAleatoire.phrase);
+        //console.log("Réponses correctes :", phraseAleatoire.reponse);
 
 
         $("#commencer").click(commencer);
