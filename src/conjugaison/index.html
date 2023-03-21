@@ -58,7 +58,9 @@
         </div>
     </div>
 
+    <script type="text/javascript" src="verbes.js"></script>
     <script>
+
         const phrasesExemple = [
             { phrase: "Hier, j'_ le bus pour aller à l'école.", verbe: "prendre", temps: "imparfait" },
             { phrase: "Hier, j'_ très peur.", verbe: "avoir", temps: "imparfait" },
@@ -98,7 +100,6 @@
             }
         }
 
-
         function validerReponse() {
             let reponse = $("#reponse").val();
             if (reponse === phrases[questionCourante].verbe) {
@@ -132,18 +133,16 @@
           ["Sophie", 2],
           ["Les voisins", 5],
           ["L'enfant", 2],
+          ["Les copains", 5],
         ];
             
-        const verbes = [
-          {
-            infinitif: "manger",
-            conjugaison: {
-              imparfait: ["mangeais", "mangeais", "mangeait", "mangions", "mangiez", "mangeaient"],
-              present: ["mange", "manges", "mange", "mangeons", "mangez", "mangent"],
-              futur: ["mangerai", "mangeras", "mangera", "mangerons", "mangerez", "mangeront"],
-            },
-          },
-          // Ajoutez d'autres verbes ici
+        const complements = [
+            "au parc",
+            "à la maison",
+            "dans le jardin",
+            "à l'école",
+            "au cinéma",
+            "dans la forêt",
         ];
       
         function getRandomElement(array) {
@@ -154,15 +153,18 @@
           const sujet = getRandomElement(sujets);
           const verbe = getRandomElement(verbes);
           const temps = getRandomElement(["imparfait", "present", "futur"]);
+
+          const complementDirect = getRandomElement(verbe.complement);
+          const complementIndirect = getRandomElement(complements);
         
           const indexSujet = sujet[1];
-        
+
           const phrase = {
             sujet: sujet[0],
             verbe: verbe.infinitif,
             temps: temps,
-            phrase: `${sujet[0]} _ (${verbe.infinitif} / ${temps}).`,
-            reponse: verbe.conjugaison.imparfait[indexSujet],
+            phrase: `${sujet[0]} _ (${verbe.infinitif} / ${temps})  ${complementDirect} ${complementIndirect}.`,
+            reponse: verbe.conjugaison[temps][indexSujet],
           };
       
           return phrase;
